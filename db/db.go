@@ -3,16 +3,9 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
-)
-
-const (
-	host     = "localhost"
-	port     = 54322
-	username = "admindb"
-	password = "adminpass"
-	dbname   = "echodemo"
 )
 
 type Resource struct {
@@ -24,57 +17,17 @@ func (r *Resource) Close() {
 	fmt.Println("Closing all db connections")
 }
 
-type User struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
-var sqliteHandler = new(Resource)
-
-func Execute(params map[interface{}]interface{}) {
-
-	sql := params["sql"].(string)
-	fmt.Println(sql)
-	result, err := sqliteHandler.Conn.Exec(sql)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(result)
-}
-
-func Query(params map[interface{}]interface{}) []User {
-	sql := params["sql"].(string)
-	fmt.Println(sql)
-	var users []User
-	rows, err := sqliteHandler.Conn.Query(sql)
-	defer rows.Close()
-	for rows.Next() {
-		var (
-			id    int
-			name  string
-			email string
-		)
-		err := rows.Scan(&id, &name, &email)
-		if err != nil {
-			fmt.Println(err)
-		}
-		var user User
-		user.ID = id
-		user.Name = name
-		user.Email = email
-		users = append(users, user)
-	}
-	err = rows.Err()
-	if err != nil {
-		fmt.Println(err)
-	}
-	return users
-}
+var SqliteHandler = new(Resource)
 
 func ConnDB() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
+	host := os.Getenv("HOST_ENDPOINT")
+	port := os.Getenv("POSTGRES_PORT")
+	username := os.Getenv("POSTGRES_USERNAME")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+
+	psqlInfo := fmt.Sprintf("host=%v port=%v user=%v "+
+		"password=%v dbname=%v sslmode=disable",
 		host, port, username, password, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
@@ -90,5 +43,5 @@ func ConnDB() {
 
 	fmt.Println("Successfully connected! DB")
 
-	sqliteHandler.Conn = db
+	SqliteHandler.Conn = db
 }
