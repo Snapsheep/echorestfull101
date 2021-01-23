@@ -3,9 +3,11 @@ package nevergo
 import (
 	"nevergo/db"
 	"nevergo/user"
+	"os"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // StartServices :: desc
@@ -19,17 +21,25 @@ func StartServices() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	//CORS
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
-	}))
-
 	// Group prefix routes
-	v1 := e.Group("/api/v1")
+	routes := e.Group("/api/v1")
+
+	// ===== Unauthenticate route
+	routes.GET("/accessible", user.Accessible)
+	routes.POST("/login", user.Login)
+	routes.POST("/create", user.CreateUser)
+
+	// ===== Route of documents
+	routes.GET("/docs/*", echoSwagger.WrapHandler)
+
+	config := middleware.JWTConfig{
+		Claims:     &user.JwtCustomClaims{},
+		SigningKey: []byte(os.Getenv("SECRET_KEY")),
+	}
+	routes.Use(middleware.JWTWithConfig(config))
 
 	// Routest user controller
-	user.UserRoutes(v1)
+	user.UserRoutes(routes)
 
 	e.Logger.Fatal(e.Start(":9001"))
 }
