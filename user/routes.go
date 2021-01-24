@@ -8,6 +8,7 @@ func UserRoutes(e *echo.Group) {
 	app := e.Group("/user")
 	app.GET("", findAllUser)
 	app.GET("/:id", getUser)
-	app.PATCH("/:id", updateUser)
+	app.PUT("/:id", updateUser)
 	app.DELETE("/:id", deleteUser)
+	app.PATCH("/resetpassword/:id", resetPassword)
 }
