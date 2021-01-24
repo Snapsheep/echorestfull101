@@ -2,12 +2,11 @@ package user
 
 import (
 	"fmt"
-	"log"
 	"nevergo/db"
 )
 
 // Execute :: desc
-func Execute(params map[interface{}]interface{}) {
+func execute(params map[interface{}]interface{}) {
 	sql := params["sql"].(string)
 	fmt.Println(sql)
 	_, err := db.SqliteHandler.Conn.Exec(sql)
@@ -18,7 +17,7 @@ func Execute(params map[interface{}]interface{}) {
 }
 
 // Query :: desc
-func Query(params map[interface{}]interface{}) []User {
+func query(params map[interface{}]interface{}) []User {
 	sql := params["sql"].(string)
 	fmt.Println(sql)
 	var users []User
@@ -49,32 +48,6 @@ func Query(params map[interface{}]interface{}) []User {
 	err = rows.Err()
 	if err != nil {
 		fmt.Println(err)
-	}
-	return users
-}
-
-func LoginFunc(params map[interface{}]interface{}) []UserLogin {
-	sql := params["sql"].(string)
-	fmt.Println(sql)
-	var users []UserLogin
-	rows, _ := db.SqliteHandler.Conn.Query(sql)
-	defer rows.Close()
-	log.Printf("log result login : %v", rows)
-	for rows.Next() {
-		var (
-			id       int
-			username string
-			password string
-		)
-		err := rows.Scan(&id, &username, &password)
-		if err != nil {
-			fmt.Println(err)
-		}
-		var user UserLogin
-		user.ID = id
-		user.Username = username
-		user.Password = password
-		users = append(users, user)
 	}
 	return users
 }
