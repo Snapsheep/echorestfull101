@@ -20,6 +20,34 @@ func CreateUser(c echo.Context) (err error) {
 	if err = c.Bind(u); err != nil {
 		return
 	}
+
+	if len(u.Email) > 0 && !middleware.IsEmailValid(u.Email) {
+		fmt.Println(u.Email + " is not a valid email")
+		c.JSON(http.StatusBadRequest, u.Email+" is no a valid email")
+		return
+	}
+
+	if !middleware.IsEmpty(u.Username) && middleware.IsEmpty(u.Password) {
+		fmt.Println("username, password is not empty")
+		c.JSON(http.StatusBadRequest, "username, password require field")
+		return
+	}
+
+	sqlStatement := `SELECT count(id) FROM users WHERE username=$1`
+	row := db.SqliteHandler.Conn.QueryRow(sqlStatement, u.Username)
+	var (
+		numID int
+	)
+	err = row.Scan(&numID)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if numID > 0 {
+		c.JSON(http.StatusBadRequest, "username "+u.Username+" is duplicate!")
+		return
+	}
+
 	params := make(map[interface{}]interface{})
 	params["sql"] = fmt.Sprintf("INSERT INTO users (username, password, fname, lname, email, tel) VALUES ('%v','%v','%v','%v','%v','%v')", u.Username, middleware.HashAndSalt([]byte(u.Password)), u.Fname, u.Lname, u.Email, u.Telephone)
 	execute(params)
@@ -29,7 +57,8 @@ func CreateUser(c echo.Context) (err error) {
 func getUser(c echo.Context) error {
 	params := make(map[interface{}]interface{})
 	id, _ := strconv.Atoi(c.Param("id"))
-	params["sql"] = fmt.Sprintf("select id, username, fname, lname, email, tel from users where id = %d", id)
+
+	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users WHERE id = %d", id)
 	u := query(params)
 	return c.JSON(http.StatusOK, u)
 }
@@ -40,15 +69,16 @@ func updateUser(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
+
 	params := make(map[interface{}]interface{})
-	params["sql"] = fmt.Sprintf("UPDATE users SET username='%v', fname='%v', lname='%v', email='%v', tel='%v' where id = %d", u.Username, u.Fname, u.Lname, u.Email, u.Telephone, id)
+	params["sql"] = fmt.Sprintf("UPDATE users SET username='%v', fname='%v', lname='%v', email='%v', tel='%v' WHERE id = %d", u.Username, u.Fname, u.Lname, u.Email, u.Telephone, id)
 	execute(params)
 	return c.JSON(http.StatusOK, u)
 }
 
 func findAllUser(c echo.Context) error {
 	params := make(map[interface{}]interface{})
-	params["sql"] = fmt.Sprintf("select id, username, fname, lname, email, tel from users")
+	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users")
 	u := query(params)
 	return c.JSON(http.StatusOK, u)
 }
@@ -56,7 +86,7 @@ func findAllUser(c echo.Context) error {
 func deleteUser(c echo.Context) error {
 	params := make(map[interface{}]interface{})
 	id, _ := strconv.Atoi(c.Param("id"))
-	params["sql"] = fmt.Sprintf("delete from users where id = %d", id)
+	params["sql"] = fmt.Sprintf("DELETE FROM users WHERE id = %d", id)
 	execute(params)
 	return c.NoContent(http.StatusNoContent)
 }
@@ -67,7 +97,7 @@ func Login(c echo.Context) (err error) {
 		return
 	}
 
-	sqlStatement := `SELECT id, password from users where username=$1`
+	sqlStatement := `SELECT id, password FROM users WHERE username=$1`
 	row := db.SqliteHandler.Conn.QueryRow(sqlStatement, u.Username)
 	var (
 		id       int
