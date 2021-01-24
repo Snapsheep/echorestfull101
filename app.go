@@ -1,12 +1,10 @@
 package nevergo
 
 import (
-	"fmt"
 	"nevergo/db"
 	"nevergo/user"
 	"os"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -15,19 +13,6 @@ import (
 // StartServices :: desc
 func StartServices() {
 	e := echo.New()
-	v := validator.New()
-
-	a := user.User{
-		Email:    "something",
-		Username: "A girl has no name",
-		Password: "1234",
-	}
-
-	err := v.Struct(a)
-
-	for _, e := range err.(validator.ValidationErrors) {
-		fmt.Println(e)
-	}
 
 	// Start DB
 	db.ConnDB()
