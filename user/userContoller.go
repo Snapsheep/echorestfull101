@@ -54,22 +54,29 @@ func CreateUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, "Create user success.")
 }
 
+// GetUser godoc
+// @Summary Retrieves user based on query
+// @Description Get User
+// @Produce json
+// @Param name query string false "Name"
+// @Param age query int false "Age"
+// @Success 200 {array} User
+// @Router /api/v1/user [get]
 func getUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	/*
-		user := c.Get("user").(*jwt.Token)
-		claims := user.Claims.(*JwtCustomClaims)
-		userID := claims.ID
-	*/
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JwtCustomClaims)
+	userID := claims.ID
 
 	params := make(map[interface{}]interface{})
-	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users WHERE id = %d", id)
+	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users WHERE id = %d", userID)
 	u := query(params)
 	return c.JSON(http.StatusOK, u)
 }
 
 func updateUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JwtCustomClaims)
+	userID := claims.ID
 
 	u := new(User)
 	if err := c.Bind(u); err != nil {
@@ -77,7 +84,7 @@ func updateUser(c echo.Context) error {
 	}
 
 	params := make(map[interface{}]interface{})
-	params["sql"] = fmt.Sprintf("UPDATE users SET username='%v', fname='%v', lname='%v', email='%v', tel='%v' WHERE id = %d", u.Username, u.Fname, u.Lname, u.Email, u.Telephone, id)
+	params["sql"] = fmt.Sprintf("UPDATE users SET username='%v', fname='%v', lname='%v', email='%v', tel='%v' WHERE id = %d", u.Username, u.Fname, u.Lname, u.Email, u.Telephone, userID)
 	execute(params)
 	return c.JSON(http.StatusOK, u)
 }
@@ -87,14 +94,6 @@ func findAllUser(c echo.Context) error {
 	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users")
 	u := query(params)
 	return c.JSON(http.StatusOK, u)
-}
-
-func deleteUser(c echo.Context) error {
-	params := make(map[interface{}]interface{})
-	id, _ := strconv.Atoi(c.Param("id"))
-	params["sql"] = fmt.Sprintf("DELETE FROM users WHERE id = %d", id)
-	execute(params)
-	return c.NoContent(http.StatusNoContent)
 }
 
 func Login(c echo.Context) (err error) {
@@ -117,8 +116,6 @@ func Login(c echo.Context) (err error) {
 	var user User
 	user.ID = id
 	user.Password = password
-
-	// log.Printf("Log user password : %v | %v", user.Password, u.Password)
 
 	if !middleware.ComparePasswords(user.Password, []byte(u.Password)) {
 		return echo.ErrUnauthorized
@@ -148,15 +145,19 @@ func resetPassword(c echo.Context) (err error) {
 		Password    string `json:"password"`
 		NewPassword string `json:"newpassword"`
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
-	log.Printf("Log reset password : %d | %v", id, c)
+
+	userToken := c.Get("user").(*jwt.Token)
+	claims := userToken.Claims.(*JwtCustomClaims)
+	userID := claims.ID
+
+	// log.Printf("Log reset password : %d | %v", id, c)
 	u := new(resetPass)
 	if err = c.Bind(u); err != nil {
 		return
 	}
 	log.Printf("Log user password : %v | %v", u.Password, u.NewPassword)
 	sqlStatement := `SELECT password from users where id=$1`
-	row := db.SqliteHandler.Conn.QueryRow(sqlStatement, id)
+	row := db.SqliteHandler.Conn.QueryRow(sqlStatement, userID)
 	var (
 		password string
 	)
@@ -175,11 +176,7 @@ func resetPassword(c echo.Context) (err error) {
 	hashPwd := middleware.HashAndSalt([]byte(u.NewPassword))
 
 	params := make(map[interface{}]interface{})
-	params["sql"] = fmt.Sprintf("UPDATE users SET password='%v' where id = %d", hashPwd, id)
+	params["sql"] = fmt.Sprintf("UPDATE users SET password='%v' where id = %d", hashPwd, userID)
 	execute(params)
 	return c.JSON(http.StatusOK, "Update password success.")
-}
-
-func Accessible(c echo.Context) error {
-	return c.String(http.StatusOK, "Accessible")
 }

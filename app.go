@@ -25,7 +25,6 @@ func StartServices() {
 	routes := e.Group("/api/v1")
 
 	// ===== Unauthenticate route
-	routes.GET("/accessible", user.Accessible)
 	routes.POST("/login", user.Login)
 	routes.POST("/user/create", user.CreateUser)
 
