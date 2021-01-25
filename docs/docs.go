@@ -26,7 +26,7 @@ var doc = `{
     "paths": {
         "/api/v1/login": {
             "post": {
-                "description": "Post UserLogin",
+                "description": "Post User",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,14 +34,27 @@ var doc = `{
                     "application/json"
                 ],
                 "summary": "Login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.UserLogin"
-                            }
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -56,7 +69,7 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Retrieves user based on query",
+                "summary": "Get all user",
                 "parameters": [
                     {
                         "type": "string",
@@ -70,10 +83,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.User"
-                            }
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -88,15 +98,12 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Retrieves user based on query",
+                "summary": "Create user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.User"
-                            }
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -111,15 +118,12 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Retrieves user based on query",
+                "summary": "Get user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.User"
-                            }
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -132,15 +136,12 @@ var doc = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Retrieves user based on query",
+                "summary": "Update user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.User"
-                            }
+                            "$ref": "#/definitions/user.User"
                         }
                     }
                 }
@@ -160,10 +161,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/user.resetPass"
-                            }
+                            "$ref": "#/definitions/user.resetPass"
                         }
                     }
                 }
@@ -194,21 +192,6 @@ var doc = `{
                     "type": "string"
                 },
                 "tel": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "user.UserLogin": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
                     "type": "string"
                 },
                 "username": {

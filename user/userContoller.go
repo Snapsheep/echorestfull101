@@ -20,11 +20,11 @@ type resetPass struct {
 	NewPassword string `json:"newpassword"`
 }
 
-// @Summary Retrieves user based on query
+// @Summary Create user
 // @Description Post User
 // @Accept  json
 // @Produce json
-// @Success 200 {array} User
+// @Success 200 {object} User
 // @Router /api/v1/user/create [post]
 func CreateUser(c echo.Context) (err error) {
 	u := new(User)
@@ -65,11 +65,11 @@ func CreateUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, "Create user success.")
 }
 
-// @Summary Retrieves user based on query
+// @Summary Get user
 // @Description Get User
 // @Accept  json
 // @Produce json
-// @Success 200 {array} User
+// @Success 200 {object} User
 // @Router /api/v1/user/me [get]
 func getUser(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
@@ -82,11 +82,11 @@ func getUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
-// @Summary Retrieves user based on query
+// @Summary Update user
 // @Description Put User
 // @Accept  json
 // @Produce json
-// @Success 200 {array} User
+// @Success 200 {object} User
 // @Router /api/v1/user/me [put]
 func updateUser(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
@@ -104,12 +104,12 @@ func updateUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
-// @Summary Retrieves user based on query
+// @Summary Get all user
 // @Description Get User
 // @Accept  json
 // @Produce json
 // @Param Authorization header string true "Bearer"
-// @Success 200 {array} User
+// @Success 200 {object} User
 // @Router /api/v1/user [get]
 func findAllUser(c echo.Context) error {
 	params := make(map[interface{}]interface{})
@@ -118,11 +118,13 @@ func findAllUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
-// @Summary Retrieves user based on query
+// @Summary Login
 // @Description Post User
 // @Accept  json
 // @Produce json
-// @Success 200 {array} User
+// @Param username query string true "Username"
+// @Param password query string true "Password"
+// @Success 200 {object} User
 // @Router /api/v1/login [post]
 func Login(c echo.Context) (err error) {
 	u := new(User)
@@ -172,7 +174,7 @@ func Login(c echo.Context) (err error) {
 // @Description Patch resetPass
 // @Accept  json
 // @Produce json
-// @Success 200 {array} resetPass
+// @Success 200 {object} resetPass
 // @Router /api/v1/user/resetpassword [patch]
 func resetPassword(c echo.Context) (err error) {
 	userToken := c.Get("user").(*jwt.Token)
