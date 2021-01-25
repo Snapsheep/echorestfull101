@@ -37,7 +37,6 @@ func StartServices() {
 	// ===== Unauthenticate route
 	routes.POST("/login", user.Login)
 	routes.POST("/user/create", user.CreateUser)
-	routes.GET("/users", user.FindAllUser)
 
 	// ===== Route of documents
 	routes.GET("/docs/*", echoSwagger.WrapHandler)
