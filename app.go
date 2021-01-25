@@ -5,14 +5,24 @@ import (
 	"nevergo/user"
 	"os"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+type Validator struct {
+	validator *validator.Validate
+}
+
+func (v *Validator) Validate(i interface{}) error {
+	return v.validator.Struct(i)
+}
+
 // StartServices :: desc
 func StartServices() {
 	e := echo.New()
+	e.Validator = &Validator{validator: validator.New()}
 
 	// Start DB
 	db.ConnDB()
@@ -27,6 +37,7 @@ func StartServices() {
 	// ===== Unauthenticate route
 	routes.POST("/login", user.Login)
 	routes.POST("/user/create", user.CreateUser)
+	routes.GET("/users", user.FindAllUser)
 
 	// ===== Route of documents
 	routes.GET("/docs/*", echoSwagger.WrapHandler)

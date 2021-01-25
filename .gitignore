@@ -1,1 +1,2 @@
-run.sh
+runtest.sh
+userController_test.go

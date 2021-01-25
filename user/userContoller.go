@@ -15,6 +15,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type resetPass struct {
+	Password    string `json:"password"`
+	NewPassword string `json:"newpassword"`
+}
+
 func CreateUser(c echo.Context) (err error) {
 	u := new(User)
 	if err = c.Bind(u); err != nil {
@@ -54,14 +59,6 @@ func CreateUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, "Create user success.")
 }
 
-// GetUser godoc
-// @Summary Retrieves user based on query
-// @Description Get User
-// @Produce json
-// @Param name query string false "Name"
-// @Param age query int false "Age"
-// @Success 200 {array} User
-// @Router /api/v1/user [get]
 func getUser(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JwtCustomClaims)
@@ -89,6 +86,13 @@ func updateUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
+// @Summary Retrieves user based on query
+// @Description Get User
+// @Accept  json
+// @Produce json
+// @Param Authorization header string true "Bearer"
+// @Success 200 {array} User
+// @Router /api/v1/user [get]
 func findAllUser(c echo.Context) error {
 	params := make(map[interface{}]interface{})
 	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users")
@@ -141,11 +145,6 @@ func Login(c echo.Context) (err error) {
 }
 
 func resetPassword(c echo.Context) (err error) {
-	type resetPass struct {
-		Password    string `json:"password"`
-		NewPassword string `json:"newpassword"`
-	}
-
 	userToken := c.Get("user").(*jwt.Token)
 	claims := userToken.Claims.(*JwtCustomClaims)
 	userID := claims.ID

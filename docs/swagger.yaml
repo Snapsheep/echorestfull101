@@ -16,11 +16,7 @@ definitions:
       username:
         type: string
     required:
-    - email
-    - fname
-    - lname
     - password
-    - tel
     - username
     type: object
 info:
@@ -28,16 +24,15 @@ info:
 paths:
   /api/v1/user:
     get:
+      consumes:
+      - application/json
       description: Get User
       parameters:
-      - description: Name
-        in: query
-        name: name
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
         type: string
-      - description: Age
-        in: query
-        name: age
-        type: integer
       produces:
       - application/json
       responses:

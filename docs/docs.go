@@ -27,6 +27,9 @@ var doc = `{
         "/api/v1/user": {
             "get": {
                 "description": "Get User",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -34,15 +37,10 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Name",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Age",
-                        "name": "age",
-                        "in": "query"
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -63,11 +61,7 @@ var doc = `{
         "user.User": {
             "type": "object",
             "required": [
-                "email",
-                "fname",
-                "lname",
                 "password",
-                "tel",
                 "username"
             ],
             "properties": {
