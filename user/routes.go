@@ -9,5 +9,5 @@ func UserRoutes(e *echo.Group) {
 	app.GET("", findAllUser)
 	app.GET("/me", getUser)
 	app.PUT("/me", updateUser)
-	app.PATCH("/resetpassword/:id", resetPassword)
+	app.PATCH("/resetpassword", resetPassword)
 }
