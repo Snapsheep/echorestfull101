@@ -20,6 +20,12 @@ type resetPass struct {
 	NewPassword string `json:"newpassword"`
 }
 
+// @Summary Retrieves user based on query
+// @Description Post User
+// @Accept  json
+// @Produce json
+// @Success 200 {array} User
+// @Router /api/v1/user/create [post]
 func CreateUser(c echo.Context) (err error) {
 	u := new(User)
 	if err = c.Bind(u); err != nil {
@@ -32,7 +38,7 @@ func CreateUser(c echo.Context) (err error) {
 		return
 	}
 
-	if !middleware.IsEmpty(u.Username) && middleware.IsEmpty(u.Password) {
+	if !middleware.IsEmpty(u.Username) && !middleware.IsEmpty(u.Password) {
 		fmt.Println("username, password is not empty")
 		c.JSON(http.StatusBadRequest, "username, password require field")
 		return
@@ -59,6 +65,12 @@ func CreateUser(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, "Create user success.")
 }
 
+// @Summary Retrieves user based on query
+// @Description Get User
+// @Accept  json
+// @Produce json
+// @Success 200 {array} User
+// @Router /api/v1/user/me [get]
 func getUser(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JwtCustomClaims)
@@ -70,6 +82,12 @@ func getUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
+// @Summary Retrieves user based on query
+// @Description Put User
+// @Accept  json
+// @Produce json
+// @Success 200 {array} User
+// @Router /api/v1/user/me [put]
 func updateUser(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JwtCustomClaims)
@@ -100,6 +118,12 @@ func findAllUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, u)
 }
 
+// @Summary Retrieves user based on query
+// @Description Post User
+// @Accept  json
+// @Produce json
+// @Success 200 {array} User
+// @Router /api/v1/login [post]
 func Login(c echo.Context) (err error) {
 	u := new(User)
 	if err = c.Bind(u); err != nil {
@@ -144,6 +168,12 @@ func Login(c echo.Context) (err error) {
 	})
 }
 
+// @Summary Reset password
+// @Description Patch resetPass
+// @Accept  json
+// @Produce json
+// @Success 200 {array} resetPass
+// @Router /api/v1/user/resetpassword [patch]
 func resetPassword(c echo.Context) (err error) {
 	userToken := c.Get("user").(*jwt.Token)
 	claims := userToken.Claims.(*JwtCustomClaims)
