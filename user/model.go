@@ -13,7 +13,7 @@ type User struct {
 }
 
 type JwtCustomClaims struct {
-	Username string `json:"username"`
-	Admin    bool   `json:"admin"`
+	ID    int  `json:"id"`
+	Admin bool `json:"admin"`
 	jwt.StandardClaims
 }

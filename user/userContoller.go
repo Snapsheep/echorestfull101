@@ -55,9 +55,14 @@ func CreateUser(c echo.Context) (err error) {
 }
 
 func getUser(c echo.Context) error {
-	params := make(map[interface{}]interface{})
 	id, _ := strconv.Atoi(c.Param("id"))
+	/*
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(*JwtCustomClaims)
+		userID := claims.ID
+	*/
 
+	params := make(map[interface{}]interface{})
 	params["sql"] = fmt.Sprintf("SELECT id, username, fname, lname, email, tel FROM users WHERE id = %d", id)
 	u := query(params)
 	return c.JSON(http.StatusOK, u)
@@ -65,6 +70,7 @@ func getUser(c echo.Context) error {
 
 func updateUser(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
+
 	u := new(User)
 	if err := c.Bind(u); err != nil {
 		return err
