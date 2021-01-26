@@ -17,3 +17,13 @@ type JwtCustomClaims struct {
 	Admin bool `json:"admin"`
 	jwt.StandardClaims
 }
+
+type resetPass struct {
+	Password    string `json:"password"`
+	NewPassword string `json:"newpassword"`
+}
+
+type userLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

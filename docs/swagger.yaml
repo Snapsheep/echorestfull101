@@ -26,6 +26,13 @@ definitions:
       password:
         type: string
     type: object
+  user.userLogin:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -35,23 +42,19 @@ paths:
       - application/json
       description: Post User
       parameters:
-      - description: Username
-        in: query
-        name: username
+      - description: Login
+        in: body
+        name: login
         required: true
-        type: string
-      - description: Password
-        in: query
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/user.userLogin'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.User'
+            type: string
       summary: Login
   /api/v1/user:
     get:
@@ -70,20 +73,29 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.User'
+            items:
+              $ref: '#/definitions/user.User'
+            type: array
       summary: Get all user
   /api/v1/user/create:
     post:
       consumes:
       - application/json
       description: Post User
+      parameters:
+      - description: create user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.User'
+            type: string
       summary: Create user
   /api/v1/user/me:
     get:
@@ -96,31 +108,52 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.User'
+            items:
+              $ref: '#/definitions/user.User'
+            type: array
       summary: Get user
     put:
       consumes:
       - application/json
       description: Put User
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Update user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.User'
+            type: string
       summary: Update user
   /api/v1/user/resetpassword:
     patch:
       consumes:
       - application/json
       description: Patch resetPass
+      parameters:
+      - description: reset password
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/user.resetPass'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/user.resetPass'
+            type: string
       summary: Reset password
 swagger: "2.0"
